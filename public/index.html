@@ -4,6 +4,7 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Enviar whatsapp sin agregar a nadie</title>
+	<link rel="manifest" href="manifest.json">
 	<meta name="description" content="Envia mensajes de WhatsApp a extraños o personas que no tengas agendadas" />
 	<meta name='twitter:card' content="summary_large_image" />
 	<meta name='twitter:title' content="Enviar whatsapp sin agregar a nadie" />
@@ -336,5 +337,6 @@
 		gtag('js', new Date());
 		gtag('config', 'UA-145003083-1');
 	</script>
+	<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("/service-worker.js");});}</script>
 </body>
 </html>
