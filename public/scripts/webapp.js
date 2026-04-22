@@ -242,6 +242,8 @@
         '263':    '71 234 5678'
     };
 
+    var CACHE_KEY = 'wsp_country_code';
+
     inpSelect.addEventListener( 'change', onSelectChange, false );
     inpNumber.addEventListener( 'change', onInputChange, false );
     inpNumber.addEventListener( 'keyup', onInputChange, false );
@@ -249,19 +251,50 @@
     detectCountry();
 
     function detectCountry() {
+        var cached = localStorage.getItem(CACHE_KEY);
+        if (cached) {
+            applyCountry(cached);
+        } else {
+            addPlaceholder();
+        }
+
         fetch('https://ipapi.co/json/')
             .then(function(res) { return res.json(); })
             .then(function(data) {
                 var code = data.country_calling_code && data.country_calling_code.replace('+', '');
-                if (!code) return;
-                var option = inpSelect.querySelector('option[value="' + code + '"]');
-                if (!option) return;
-                inpSelect.value = code;
-                prefix = code;
-                updatePlaceholder(code);
-                renderLink();
+                if (!code || !inpSelect.querySelector('option[value="' + code + '"]')) {
+                    removePlaceholder();
+                    return;
+                }
+                localStorage.setItem(CACHE_KEY, code);
+                applyCountry(code);
             })
-            .catch(function() {});
+            .catch(function() { removePlaceholder(); });
+    }
+
+    function addPlaceholder() {
+        var opt = document.createElement('option');
+        opt.value = '';
+        opt.disabled = true;
+        opt.selected = true;
+        opt.id = 'country-placeholder';
+        opt.textContent = 'Detectando país...';
+        inpSelect.insertBefore(opt, inpSelect.firstChild);
+    }
+
+    function removePlaceholder() {
+        var opt = document.getElementById('country-placeholder');
+        if (opt) opt.parentNode.removeChild(opt);
+    }
+
+    function applyCountry(code) {
+        removePlaceholder();
+        var option = inpSelect.querySelector('option[value="' + code + '"]');
+        if (!option) return;
+        inpSelect.value = code;
+        prefix = code;
+        updatePlaceholder(code);
+        renderLink();
     }
 
     function onSelectChange() {
