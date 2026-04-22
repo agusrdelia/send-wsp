@@ -11,6 +11,23 @@
     inpNumber.addEventListener( 'change', onInputChange, false );
     inpNumber.addEventListener( 'keyup', onInputChange, false );
 
+    detectCountry();
+
+    function detectCountry() {
+        fetch('https://ipapi.co/json/')
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                var code = data.country_calling_code && data.country_calling_code.replace('+', '');
+                if (!code) return;
+                var option = inpSelect.querySelector('option[value="' + code + '"]');
+                if (!option) return;
+                inpSelect.value = code;
+                prefix = code;
+                renderLink();
+            })
+            .catch(function() {});
+    }
+
     function onSelectChange() {
         prefix = this.value.replace(/[^0-9]/g, '');
         renderLink();
